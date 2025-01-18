@@ -1,35 +1,62 @@
-import React from 'react'
+import React, { useState } from 'react';
 
 const Benefit = () => {
+  const [submitted, setSubmitted] = useState(false);
+
+  const handleSubmit = (event: React.FormEvent) => {
+    event.preventDefault(); // Prevent the default form submission behavior
+    setSubmitted(true); // Update state to show the submitted message
+  };
+
   return (
-    <>
-      <section>
-        <div className='py-12 bg-[#F9F9F9] text-[#2A254B] mt-12'>
-          <div className='w-full max-w-[640px] md:max-w-[1340px] h-[350px] bg-white mx-auto flex justify-center items-center flex-col px-4'>
-            <h1 className='text-2xl md:text-4xl text-center'>
-              Join the club and get the benefits
-            </h1>
-            <h2 className='text-center py-4 text-sm md:text-base'>
-              Sign up for our newsletter and receive exclusive offers on new
-              <br /> ranges, sales, pop-up stores, and more.
+    <section className="py-16 bg-[#F9F9F9] text-[#2A254B]">
+      <div className="max-w-5xl mx-auto bg-white shadow-lg rounded-lg p-8 md:p-16 flex flex-col items-center">
+        {/* Header Section */}
+        <h1 className="text-3xl md:text-5xl font-bold text-center leading-tight">
+          Join the Club and Enjoy Exclusive Benefits
+        </h1>
+        <p className="text-center mt-4 text-base md:text-lg text-gray-600">
+          Subscribe to our newsletter for updates on new ranges, exclusive offers, 
+          special sales, and pop-up store events.
+        </p>
+
+        {/* Conditional Rendering for Form or Success Message */}
+        {!submitted ? (
+          <form
+            onSubmit={handleSubmit}
+            className="mt-8 w-full flex flex-col md:flex-row items-center gap-4"
+          >
+            <input
+              type="email"
+              placeholder="Enter your email address"
+              required
+              className="p-4 w-full md:w-[70%] border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#2A254B] text-gray-700"
+            />
+            <button
+              type="submit"
+              className="px-8 py-4 w-full md:w-auto bg-[#2A254B] text-white rounded-lg font-medium shadow-lg hover:bg-[#40356D] transition duration-300"
+            >
+              Sign Up
+            </button>
+          </form>
+        ) : (
+          <div className="mt-8 text-center">
+            <h2 className="text-xl md:text-2xl font-semibold text-[#2A254B]">
+              Thank you for subscribing!
             </h2>
-            <div className='mt-4 w-full'>
-              <form action="" className='flex flex-col md:flex-row items-center justify-center'>
-                <input
-                  type="text"
-                  placeholder="your@email.com"
-                  className="p-4 bg-[#F9F9F9] w-full md:w-[354px] h-[56px] outline-none mb-4 md:mb-0"
-                />
-                <button className='p-2 bg-[#2A254B] text-white w-full md:w-[118px] h-[56px]'>
-                  Signup
-                </button>
-              </form>
-            </div>
+            <p className="text-gray-600 mt-2">
+              You have successfully joined our newsletter.
+            </p>
           </div>
-        </div>
-      </section>
-    </>
-  )
-}
+        )}
+
+        {/* Footer Section */}
+        <p className="text-center text-sm mt-6 text-gray-500">
+          We respect your privacy. Unsubscribe anytime.
+        </p>
+      </div>
+    </section>
+  );
+};
 
 export default Benefit;

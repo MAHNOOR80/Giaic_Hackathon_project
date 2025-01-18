@@ -5,8 +5,17 @@ import { IoCartOutline } from 'react-icons/io5';
 import { IoIosContact } from 'react-icons/io';
 import { IoMenu, IoClose } from 'react-icons/io5';
 import Link from 'next/link';
+import About from '../about/page';
+import { productcategory } from '@/sanity/lib/queries';
+import { sanityfetch } from '@/sanity/lib/fetch';
+import { client } from '@/sanity/lib/client';
 
-const Navbar = () => {
+
+
+
+  function Navbar(){
+
+
   const [menuOpen, setMenuOpen] = useState(false);
 
   const toggleMenu = () => {
@@ -26,6 +35,7 @@ const Navbar = () => {
         <h1 className="text-[#22202E] text-xl md:text-2xl md:absolute md:left-1/2 md:transform md:-translate-x-1/2">
           Avion
         </h1>
+        
 
         {/* Cart and Contact Icons for Large Screens */}
         <div className="sm:hidden md:flex gap-4">
@@ -66,11 +76,14 @@ const Navbar = () => {
         )}
 
         <ul className="flex flex-col md:flex-row justify-center items-start md:items-center gap-4 md:gap-8 text-[#726E8D] text-base p-6 md:p-0">
+          <Link href={"/about"}><p>About</p></Link>
+
+
           {['Plant pots', 'Ceramics', 'Tables', 'Chairs', 'Crockery', 'Tableware', 'Cutlery'].map((item) => (
             <li key={item}>
               <a href="/">{item}</a>
             </li>
-          ))}
+          ))} 
           
         </ul>
       </header>
