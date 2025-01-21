@@ -1,104 +1,155 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @next/next/no-img-element */
-"use client"
-import React, { useState } from "react";
-import Navbar from "../components/navbar";
+"use client";
+import { remove } from "../redux/cartslice";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../redux/store";
+import Image from "next/image";
+import { useState } from "react";
 
-const Cart = () => {
-  // State to handle product quantities and total cost
-  const [products, setProducts] = useState([
-    { id: 1, name: "Graystone vase", price: 85, quantity: 1, image: "/images/Product Image.png" },
-    { id: 2, name: "Basic white vase", price: 85, quantity: 1, image: "/images/Product Image 2.png" },
-  ]);
+interface Cartitem {
+  _id: any;
+  image?: string; // Made optional to handle missing images
+  name: string;
+  price: number;
 
-  // Function to handle quantity change
-  const handleQuantityChange = (id: number, change: number) => {
-    setProducts((prevProducts) =>
-      prevProducts.map((product) =>
-        product.id === id
-          ? { ...product, quantity: Math.max(1, product.quantity + change) }
-          : product
-      )
-    );
+}
+
+const Cartpage: React.FC = () => {
+  const dispatch = useDispatch();
+  const Cartitems = useSelector((state: RootState) => state.cart);
+  const [message, setMessage] = useState<string | null>(null);
+  const [voucher, setVoucher] = useState<string | null>(null);
+
+  const handleRemove = (_id: any) => {
+    dispatch(remove(_id));
+    const removedItem = Cartitems.find((item: Cartitem) => item._id === _id);
+    setMessage(`${removedItem?.name} has been removed from the cart.`);
+    setTimeout(() => setMessage(null), 3000); // Clear message after 3 seconds
   };
 
-  // Calculate total cost
-  const total = products.reduce((acc, product) => acc + product.price * product.quantity, 0);
-
-  // Handle Checkout
   const handleCheckout = () => {
-    alert(`You have successfully checked out! Your total is £${total}.`);
+    if (Cartitems.length === 0) {
+      setMessage("Your cart is empty. Add items to checkout!");
+      setTimeout(() => setMessage(null), 3000);
+      return;
+    }
+
+    // Generate a simple voucher (you can enhance it as needed)
+    const voucherCode = `#${Math.random().toString(36).substr(2, 8).toUpperCase()}`;
+    const voucherDetails = `
+      🎟️ Voucher Code: ${voucherCode}
+
+      🛒 Items Purchased:
+      ${Cartitems.map((item, index) => `${index + 1}. ${item.name}`).join("\n  ")}
+
+      📅 Date: ${new Date().toLocaleDateString()}
+      🕒 Time: ${new Date().toLocaleTimeString()}
+    `;
+
+    setVoucher(voucherDetails);
+    setMessage("Checkout successful! Here is your voucher.");
+    setTimeout(() => setMessage(null), 3000);
   };
 
   return (
-    <>
-      <div className="bg-gray-200 w-full px-4 sm:px-10 lg:px-40 pt-10 pb-16 h-auto text-custom-purple">
-        <h1 className="text-2xl sm:text-3xl text-center lg:text-left">Your Shopping Cart</h1>
+    <div className="min-h-screen bg-gray-50 py-10 px-4 sm:px-8 lg:px-16">
+      {/* Page Title */}
+      <h3 className="text-4xl font-extrabold text-gray-800 text-center mb-10">
+        Your Shopping Cart
+      </h3>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 pt-10">
-          {/* Product Section */}
-          <div className="border-2 p-4 space-y-8">
-            {products.map((product) => (
-              <div key={product.id} className="flex items-start justify-between">
-                <div className="flex">
-                  <img
-                    src={product.image}
-                    alt={product.name}
-                    className="w-20 h-20 sm:w-28 sm:h-28 transition-transform duration-300 ease-in-out hover:scale-105 hover:translate-y-1"
+      {/* Notification Message */}
+      {message && (
+        <div className="flex items-center max-w-xl mx-auto text-green-600 font-medium mb-6 p-4 bg-green-50 border border-green-300 rounded-md">
+          <span className="material-icons-outlined mr-2">check_circle</span>
+          {message}
+        </div>
+      )}
+
+      {/* Cart Items */}
+      <div className="max-w-5xl mx-auto space-y-8">
+        {Cartitems.length > 0 ? (
+          Cartitems.map((item: Cartitem) => (
+            <div
+              key={item._id}
+              className="flex items-center bg-white shadow-lg rounded-lg p-6 space-x-6"
+            >
+              {/* Image Section */}
+              <div className="flex-shrink-0 w-32 h-32 bg-gray-200 rounded-md overflow-hidden">
+                {item.image ? (
+                  <Image
+                    src={item.image}
+                    alt={item.name}
+                    height={128}
+                    width={128}
+                    className="object-cover w-full h-full"
                   />
-                  <div className="ml-6">
-                    <h1 className="text-base sm:text-lg font-medium">{product.name}</h1>
-                    <p className="text-sm mt-2">A timeless ceramic vase with a tri-color grey glaze.</p>
-                    <p className="mt-2 text-base font-semibold">£{product.price}</p>
-                  </div>
-                </div>
-
-                {/* Quantity Section */}
-                <div className="flex flex-col items-center">
-                  <h1 className="text-sm font-semibold sm:hidden lg:block">Quantity</h1>
-                  <div className="flex items-center mt-2">
-                    <button
-                      className="bg-custom-purple text-white rounded-full px-4 py-1 mr-2"
-                      onClick={() => handleQuantityChange(product.id, -1)}
-                    >
-                      -
-                    </button>
-                    <p className="text-lg font-medium">{product.quantity}</p>
-                    <button
-                      className="bg-custom-purple text-white rounded-full px-4 py-1 ml-2"
-                      onClick={() => handleQuantityChange(product.id, 1)}
-                    >
-                      +
-                    </button>
-                  </div>
-                </div>
+                ) : (
+                  <Image
+                    src="/placeholder-image.png"
+                    alt="Placeholder"
+                    height={128}
+                    width={128}
+                    className="object-cover w-full h-full"
+                  />
+                )}
               </div>
-            ))}
-          </div>
 
-          {/* Total Section (Hidden on Small Screens) */}
-          <div className="border-2 p-4 sm:hidden lg:block">
-            <h1 className="text-lg font-semibold">Total</h1>
-            <p className="mt-10 text-lg font-medium">£{total}</p>
-            <p className="mt-40 text-lg font-medium">£{total}</p>
-          </div>
-        </div>
+              {/* Content Section */}
+              <div className="flex-grow">
+                <h5 className="text-lg font-semibold text-gray-800">
+                  {item.name}
+                </h5>
+                <p className="text-gray-600 text-sm mt-2">
+                  Price:{" "}
+                  <span className="text-gray-900 font-medium">
+                    ${item.price.toFixed(2)}
+                  </span>
+                </p>
+              </div>
 
-        {/* Subtotal Section */}
-        <div className="mt-10 text-center lg:text-right">
-          <h1 className="inline text-lg sm:text-xl font-medium mr-4">Subtotal</h1>
-          <h1 className="inline text-xl sm:text-2xl font-semibold">£{total}</h1>
-          <p className="text-sm mt-4">Taxes and shipping are calculated at checkout</p>
-          <button
-            className="bg-custom-purple h-12 sm:h-14 mt-6 w-full sm:w-56 rounded-sm text-white"
-            onClick={handleCheckout} // Trigger checkout message on button click
-          >
-            Go to checkout
-          </button>
-        </div>
+              {/* Remove Button */}
+              <div>
+                <button
+                  className="bg-red-500 text-white px-6 py-2 rounded-md shadow hover:bg-red-600 transition-all"
+                  onClick={() => handleRemove(item._id)}
+                >
+                  Remove
+                </button>
+              </div>
+            </div>
+          ))
+        ) : (
+          <p className="text-center text-gray-600 text-lg">
+            Your cart is empty. Start shopping now!
+          </p>
+        )}
       </div>
-    </>
+
+      {/* Checkout Section */}
+      <div className="max-w-5xl mx-auto mt-10 text-center">
+        <button
+          className="bg-blue-600 text-white px-8 py-3 rounded-md shadow-lg hover:bg-blue-700 transition-all"
+          onClick={handleCheckout}
+        >
+          Checkout
+        </button>
+      </div>
+
+      {/* Voucher Section */}
+      {voucher && (
+        <div className="max-w-5xl mx-auto mt-10 bg-gradient-to-br from-blue-100 to-gray-50 p-6 shadow-xl rounded-lg border">
+          <h4 className="text-2xl font-bold text-gray-800 mb-4">🎉 Your Voucher</h4>
+          <pre className="bg-gray-100 p-4 rounded-md text-left text-gray-700 whitespace-pre-wrap">
+            {voucher}
+          </pre>
+        </div>
+      )}
+    </div>
   );
 };
 
-export default Cart;
+export default Cartpage;
+
+

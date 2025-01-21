@@ -2,12 +2,13 @@
 import Image from 'next/image'
 import React from 'react'
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 const Product = () => {
   const router = useRouter();
 
   const handleNavigation = () => {
-    router.push('/productlisting'); // Navigates to the "/productlisting" page
+    router.push('/products'); // Navigates to the "/productlisting" page
   };
 
   return (
@@ -68,12 +69,14 @@ const Product = () => {
 
           {/* View Collection Button */}
           <div className="my-16 text-center">
-            <button
+           <Link href={"/products"}>
+           <button
               className="bg-[#F9F9F9] text-[#2A254B] py-3 px-8 rounded-lg font-medium text-lg transition-colors duration-300 ease-in-out hover:bg-[#2A254B] hover:text-white"
               onClick={handleNavigation}
             >
               View All Products
             </button>
+           </Link>
           </div>
         </div>
       </section>

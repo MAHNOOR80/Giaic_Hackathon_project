@@ -1,4 +1,5 @@
 import Image from 'next/image'
+import Link from 'next/link';
 import React from 'react'
 
 const Ceramics = () => {
@@ -76,9 +77,16 @@ const Ceramics = () => {
 
           {/* View Collection Button */}
           <div className="my-10 flex justify-center items-center">
-            <button className="bg-[#F9F9F9] py-4 px-8 rounded-[5px] text-[#2A254B] font-semibold text-lg hover:bg-[#2A254B] hover:text-white transition duration-300 ease-in-out shadow-md">
-              View Collection
-            </button>
+          <Link href={"/products"}>
+  <div className="flex justify-center mt-8">
+    <button
+      className="bg-[#F9F9F9] text-[#2A254B] py-3 px-8 rounded-lg font-medium text-lg transition-colors duration-300 ease-in-out hover:bg-[#2A254B] hover:text-white"
+    >
+      View All Products
+    </button>
+  </div>
+</Link>
+
           </div>
         </div>
       </section>

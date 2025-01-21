@@ -9,7 +9,7 @@ const Benefit = () => {
   };
 
   return (
-    <section className="py-16 bg-[#F9F9F9] text-[#2A254B]">
+    <section className="py-16 bg-[#F9F9F9] text-[#2A254B] mt-6 ">
       <div className="max-w-5xl mx-auto bg-white shadow-lg rounded-lg p-8 md:p-16 flex flex-col items-center">
         {/* Header Section */}
         <h1 className="text-3xl md:text-5xl font-bold text-center leading-tight">

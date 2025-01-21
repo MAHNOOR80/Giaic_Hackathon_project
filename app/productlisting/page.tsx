@@ -4,6 +4,7 @@ import { TbTruckDelivery } from 'react-icons/tb';
 import { IoIosCheckmarkCircleOutline } from "react-icons/io";
 import { LuSprout } from "react-icons/lu";
 import { MdOutlinePriceChange } from "react-icons/md";
+import Link from 'next/link';
 
 const ProductListing = () => {
   const features = [
@@ -97,7 +98,7 @@ const ProductListing = () => {
           </div>
 
           {/* Suggestions Section */}
-          {/* <h1 className="text-xl md:text-2xl font-semibold mt-12 text-[#505977]">You might also like</h1>
+           <h1 className="text-xl md:text-2xl font-semibold mt-12 text-[#505977]">You might also like</h1>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-8">
             {['chair', 'vase', 'silky', 'lamp'].map((item, idx) => (
               <div key={idx} className="group w-full">
@@ -114,13 +115,22 @@ const ProductListing = () => {
                 </div>
               </div>
             ))}
-          </div> */}
+          </div> 
 
           {/* View Collection Button */}
-          <div className="my-10 text-center">
-            <button className="bg-[#F9F9F9] py-3 px-6 rounded-md text-[#2A254B] font-semibold text-lg hover:bg-[#2A254B] hover:text-white transition duration-300">
-              View collection
-            </button>
+          <div className="my-10 flex justify-center items-center">
+          
+          <div className="flex justify-center mt-8">
+          <Link href={"/products"}>
+           <button
+      className="bg-[#F9F9F9] text-[#2A254B] py-3 px-8 rounded-lg font-medium text-lg transition-colors duration-300 ease-in-out hover:bg-[#2A254B] hover:text-white"
+    >
+      View All Products
+          </button>
+          </Link>
+          </div>
+         
+
           </div>
 
           {/* Features Section */}

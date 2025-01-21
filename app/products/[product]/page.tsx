@@ -1,9 +1,13 @@
+"use client"
 import { client } from '@/sanity/lib/client';
 import { sanityFetch } from '@/sanity/lib/live';
 import { defineQuery } from 'next-sanity';
-import React from 'react';
+import React, { useState } from 'react';
 import Image from 'next/image';
 import imageUrlBuilder from '@sanity/image-url';
+import { useDispatch } from 'react-redux';
+import { add } from '@/app/redux/cartslice'; // Import your add action
+import Link from 'next/link';
 
 const builder = imageUrlBuilder(client);
 
@@ -11,21 +15,40 @@ function urlFor(source) {
   return builder.image(source);
 }
 
-async function Page({ params }) {
+async function getProductBySlug(slug) {
+  try {
+    const GET_PRODUCT_BY_SLUG_QUERY = `*[_type == "product" && slug.current == $slug][0]`;
+    const products = await client.fetch(GET_PRODUCT_BY_SLUG_QUERY, { slug });
+    return products || null;
+  } catch (error) {
+    console.error("Error while fetching product data", error);
+    return null;
+  }
+}
+
+const Page = ({ params }) => {
   const { product } = params;
+  const [notification, setNotification] = useState<string | null>(null);
+  const dispatch = useDispatch();
 
-  const getProductBySlug = async (slug) => {
-    try {
-      const GET_PRODUCT_BY_SLUG_QUERY = `*[_type == "product" && slug.current == $slug][0]`;
-      const products = await client.fetch(GET_PRODUCT_BY_SLUG_QUERY, { slug });
-      return products || null;
-    } catch (error) {
-      console.error("Error while fetching product data", error);
-      return null;
-    }
+  // Fetch product data based on the slug
+  const [productData, setProductData] :any= useState(null);
+
+  React.useEffect(() => {
+    const fetchProductData = async () => {
+      const data = await getProductBySlug(product);
+      setProductData(data);
+    };
+
+    fetchProductData();
+  }, [product]);
+
+  // Handle adding product to the cart
+  const handleAddToCart = (product:any) => {
+    dispatch(add(product));
+    setNotification(`${product.name} added to the cart!`);
+    setTimeout(() => setNotification(null), 3000); // Clear notification after 3 seconds
   };
-
-  const productData = await getProductBySlug(product);
 
   if (!productData) {
     return <p className="text-center text-gray-500">Product not found.</p>;
@@ -33,6 +56,19 @@ async function Page({ params }) {
 
   return (
     <div className="container mx-auto px-4 py-8">
+      {/* Notification Banner */}
+      {notification && (
+        <div className="fixed top-4 left-1/2 transform -translate-x-1/2 bg-green-600 text-white px-6 py-3 rounded-md shadow-xl z-50">
+          {notification}{' '}
+          <Link
+            href="/Cart"
+            className="underline ml-2 text-white font-bold hover:text-gray-200"
+          >
+            View Cart
+          </Link>
+        </div>
+      )}
+
       <div className="flex flex-col md:flex-row items-center gap-8">
         <div className="w-full md:w-1/2">
           <Image
@@ -56,7 +92,7 @@ async function Page({ params }) {
               </span>
             ))}
           </div>
-          <p className="text-gray-700 mb-4 t">
+          <p className="text-gray-700 mb-4">
             <strong>Features:</strong> {productData.features}
           </p>
           <p className="text-gray-700 mb-4">
@@ -68,25 +104,18 @@ async function Page({ params }) {
           <p className="text-2xl font-semibold text-green-600 mb-6">
             ${productData.price}
           </p>
-          <button className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700">
+          {/* Add to Cart Button */}
+          <button
+            onClick={() => handleAddToCart(productData)}
+            className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700"
+          >
             Add to Cart
           </button>
         </div>
       </div>
     </div>
   );
-}
+};
 
 export default Page;
 
-
-// "category": category->title,
-//     name,
-//     slug,
-//     "imageUrl":image.asset->url,
-//     price,
-//     quantity,
-//     tags,
-//     description,
-//     features,
-    // dimensions

@@ -1,9 +1,9 @@
 "use client";
-import Hero from "./components/hero";
-import Brand from "./components/brand";
-import Ceramics from "./components/ceramics";
-import Benefit from "./components/benefit";
-import Touch from "./components/touch";
+import Hero from "@/app/components/hero";
+import Brand from "@/app/components/brand";
+import Ceramics from "@/app/components/ceramics";
+import Benefit from "@/app/components/benefit";
+import Touch from "@/app/components/touch"
 import { sanityfetch } from "@/sanity/lib/fetch";
 import { allproducts, fourproducts } from "@/sanity/lib/queries";
 import Image from "next/image";
