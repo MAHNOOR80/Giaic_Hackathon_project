@@ -44,7 +44,7 @@ const Brand = () => {
               Unbeatable Prices
             </h2>
             <p className="text-gray-600 mt-2">
-              For our material and quality, you won't find better prices anywhere.
+              For our material and quality, you won&apos;t find better prices anywhere.
             </p>
           </div>
 

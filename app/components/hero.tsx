@@ -3,7 +3,7 @@ import React from 'react'
 
 const Hero = () => {
   return (
-    <section>
+    <section className="pt-20 md:pt-24"> {/* Added padding top here */}
       <div className="px-6 md:px-16 py-16 bg-white">
         <div className="flex flex-col md:flex-row items-center justify-between space-y-8 md:space-y-0">
           {/* Text Section */}

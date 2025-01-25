@@ -9,9 +9,7 @@ import { RootState } from '../redux/store';
 import { useSelector } from 'react-redux';
 
 function Navbar() {
-
-  const  item = useSelector((state:RootState)=>state.cart)
-
+  const item = useSelector((state: RootState) => state.cart);
   const [menuOpen, setMenuOpen] = useState(false);
 
   const toggleMenu = () => {
@@ -19,89 +17,158 @@ function Navbar() {
   };
 
   return (
-    <nav className="p-4 w-full bg-white shadow-md transition-all ease-in-out duration-300">
-      {/* Top Section */}
-      <div className="flex justify-between items-center py-2">
-        {/* Search Icon for Large Screens */}
-        <div className="hidden md:block">
-          <CiSearch size={25} className="text-gray-700 cursor-pointer hover:text-blue-500 transition-all duration-300" />
-        </div>
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-white shadow-md">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Top Section */}
+        <div className="flex justify-between items-center h-16">
+          {/* Logo */}
+          <div className="flex-shrink-0">
+            <Link href="/Home">
+              <h1 className="text-gray-900 text-xl font-semibold md:text-2xl cursor-pointer">
+                Avion
+              </h1>
+            </Link>
+          </div>
 
-        {/* Logo */}
-        <h1 className="text-gray-900 text-xl font-semibold md:text-2xl">
-          Avion
-        </h1>
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex items-center justify-center flex-1 px-8">
+            <div className="flex space-x-8">
+              <Link href="/Home" className="text-gray-600 hover:text-gray-900 transition-colors duration-200">
+                Home
+              </Link>
+              <Link href="/about" className="text-gray-600 hover:text-gray-900 transition-colors duration-200">
+                About
+              </Link>
+              <Link href="/products" className="text-gray-600 hover:text-gray-900 transition-colors duration-200">
+                Products
+              </Link>
+              <div className="group relative">
+                <button className="text-gray-600 hover:text-gray-900 transition-colors duration-200">
+                  Categories
+                </button>
+                <div className="absolute top-full left-0 hidden group-hover:block bg-white shadow-lg rounded-md py-2 w-48 z-50">
+                  <Link href="/TablePage" className="block px-4 py-2 text-gray-600 hover:bg-gray-100">Tables</Link>
+                  <Link href="/Plantpotspage" className="block px-4 py-2 text-gray-600 hover:bg-gray-100">Plant pots</Link>
+                  <Link href="/Ceramicspage" className="block px-4 py-2 text-gray-600 hover:bg-gray-100">Ceramics</Link>
+                  <Link href="/Chairspage" className="block px-4 py-2 text-gray-600 hover:bg-gray-100">Chairs</Link>
+                  <Link href="/Crockerypage" className="block px-4 py-2 text-gray-600 hover:bg-gray-100">Crockery</Link>
+                  <Link href="/Tablewarepage" className="block px-4 py-2 text-gray-600 hover:bg-gray-100">Tableware</Link>
+                  <Link href="/Cutlerypage" className="block px-4 py-2 text-gray-600 hover:bg-gray-100">Cutlery</Link>
+                </div>
+              </div>
+            </div>
+          </div>
 
-        {/* Cart and Contact Icons for Large Screens */}
-        <div className="hidden md:flex gap-6">
-          <Link href="/Cart">
-            <IoCartOutline size={25} className="text-gray-700 cursor-pointer hover:text-blue-500 transition-all duration-300" />
-          </Link>
-          {item.length}
-          <Link href={"/Userpage"}><IoIosContact size={25} className="text-gray-700 cursor-pointer hover:text-blue-500 transition-all duration-300" /></Link>
-        </div>
+          {/* Icons Section - Visible on both mobile and desktop */}
+          <div className="flex items-center space-x-4">
+            <button className="p-2 hover:text-blue-500 transition-colors duration-200">
+              <CiSearch size={25} />
+            </button>
+            
+            <Link href="/Cart">
+              <div className="relative p-2 hover:text-blue-500 transition-colors duration-200">
+                <IoCartOutline size={25} />
+                {item.length > 0 && (
+                  <span className="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                    {item.length}
+                  </span>
+                )}
+              </div>
+            </Link>
+            
+            <Link href="/Userpage">
+              <div className="p-2 hover:text-blue-500 transition-colors duration-200">
+                <IoIosContact size={25} />
+              </div>
+            </Link>
 
-        {/* Hamburger Menu for Mobile */}
-        <div className="flex items-center gap-4 md:hidden">
-          <CiSearch size={25} className="text-gray-700 cursor-pointer hover:text-blue-500 transition-all duration-300" />
-          <button
-            className="text-2xl focus:outline-none z-30 transition-all duration-300"
-            onClick={toggleMenu}
-          >
-            {menuOpen ? <IoClose /> : <IoMenu />}
-          </button>
+            {/* Mobile menu button */}
+            <button
+              onClick={toggleMenu}
+              className="md:hidden p-2 hover:text-blue-500 transition-colors duration-200"
+            >
+              {menuOpen ? <IoClose size={25} /> : <IoMenu size={25} />}
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* Divider */}
-      <hr className="my-2 border-gray-300" />
-
-      {/* Mobile Navigation Links */}
-      <header
-        className={`h-full w-full bg-white shadow-lg transition-transform duration-300 ease-in-out z-20 md:static md:w-auto md:translate-x-0 md:bg-transparent md:shadow-none ${menuOpen ? 'translate-x-0' : 'translate-x-full'}`}
+      {/* Mobile Navigation Menu */}
+      <div
+        className={`${
+          menuOpen ? 'translate-x-0' : '-translate-x-full'
+        } fixed top-16 left-0 right-0 bottom-0 bg-white md:hidden transition-transform duration-300 ease-in-out z-40`}
       >
-        {/* Close Button in Mobile Menu */}
-        {menuOpen && (
-          <div className="flex justify-end p-4 md:hidden">
-            <button
-              className="text-2xl focus:outline-none hover:text-blue-500 transition-all duration-300"
-              onClick={toggleMenu}
-            >
-              <IoClose />
-            </button>
-          </div>
-        )}
-
-        <ul className="flex flex-col md:flex-row justify-center items-start md:items-center gap-6 md:gap-8 text-gray-600 text-base p-6 md:p-0">
+        <div className="px-4 pt-2 pb-3 space-y-1">
+          <Link href="/Home" 
+            className="block px-3 py-2 text-base font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-md"
+            onClick={() => setMenuOpen(false)}
+          >
+            Home
+          </Link>
+          <Link href="/about"
+            className="block px-3 py-2 text-base font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-md"
+            onClick={() => setMenuOpen(false)}
+          >
+            About
+          </Link>
+          <Link href="/products"
+            className="block px-3 py-2 text-base font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-md"
+            onClick={() => setMenuOpen(false)}
+          >
+            Products
+          </Link>
           
-
-          <li>
-
-          <Link href="/Home" className="hover:text-gray-900 transition-colors duration-200 transform hover:scale-105 mr-5">
-              Home
-            </Link>
-
-            <Link href="/about" className="hover:text-gray-900 transition-colors duration-200 transform hover:scale-105 mr-5">
-              About
-            </Link>
-
-            
-            
-            <Link href="/products" className="hover:text-gray-900 transition-colors duration-200 ml-4 transform hover:scale-105">
-              Products
-            </Link>
-          </li>
-
-          <Link href={"/TablePage"}>Tables</Link>
-          <Link href={"/Plantpotspage"}>Plant pots</Link>
-          <Link href={"/Ceramicspage"}>Ceramics</Link>
-          <Link href={"/TablePage"}>Tables</Link>
-          <Link href={"/Chairspage"}>Chairs</Link>
-          <Link href={"/Crockerypage"}>Crockery</Link>
-          <Link href={"/Tablewarepage"}>Tableware</Link>
-          <Link href={"/Cutlerypage"}>Cutlery</Link>
-        </ul>
-      </header>
+          {/* Categories in mobile menu */}
+          <div className="px-3 py-2">
+            <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider">Categories</h3>
+            <div className="mt-2 space-y-1">
+              <Link href="/TablePage" 
+                className="block px-3 py-2 text-base font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-md"
+                onClick={() => setMenuOpen(false)}
+              >
+                Tables
+              </Link>
+              <Link href="/Plantpotspage"
+                className="block px-3 py-2 text-base font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-md"
+                onClick={() => setMenuOpen(false)}
+              >
+                Plant pots
+              </Link>
+              <Link href="/Ceramicspage"
+                className="block px-3 py-2 text-base font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-md"
+                onClick={() => setMenuOpen(false)}
+              >
+                Ceramics
+              </Link>
+              <Link href="/Chairspage"
+                className="block px-3 py-2 text-base font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-md"
+                onClick={() => setMenuOpen(false)}
+              >
+                Chairs
+              </Link>
+              <Link href="/Crockerypage"
+                className="block px-3 py-2 text-base font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-md"
+                onClick={() => setMenuOpen(false)}
+              >
+                Crockery
+              </Link>
+              <Link href="/Tablewarepage"
+                className="block px-3 py-2 text-base font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-md"
+                onClick={() => setMenuOpen(false)}
+              >
+                Tableware
+              </Link>
+              <Link href="/Cutlerypage"
+                className="block px-3 py-2 text-base font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-md"
+                onClick={() => setMenuOpen(false)}
+              >
+                Cutlery
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
     </nav>
   );
 }

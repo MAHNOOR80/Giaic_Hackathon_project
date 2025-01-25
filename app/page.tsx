@@ -1,14 +1,14 @@
 "use client";
+import React, { useEffect, useState } from "react";
 import Hero from "./components/hero";
 import Brand from "./components/brand";
 import Ceramics from "./components/ceramics";
 import Benefit from "./components/benefit";
 import Touch from "./components/touch";
 import { sanityfetch } from "@/sanity/lib/fetch";
-import { allproducts, fourproducts } from "@/sanity/lib/queries";
+import { fourproducts } from "@/sanity/lib/queries";
 import Image from "next/image";
 import Link from "next/link";
-import React from "react";
 
 type Product = {
   _id: string;
@@ -31,9 +31,22 @@ type Product = {
   };
 };
 
-export default async function Home() {
-  const products: Product[] = await sanityfetch({ query: fourproducts });
-  // console.log("Fetched Products:", products);
+export default function Home() {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      const products = await sanityfetch({ query: fourproducts });
+      setProducts(products);
+      setLoading(false);
+    };
+    fetchProducts();
+  }, []);
+
+  if (loading) {
+    return <div>Loading...</div>; // You can return a loading state while data is being fetched
+  }
 
   return (
     <div>
@@ -96,7 +109,6 @@ export default async function Home() {
 
               {/* Buttons */}
               <div className="flex space-x-4 mt-auto">
-              
                 <Link
                   href={`/products/${product.slug.current}`}
                   className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors duration-300"
@@ -104,22 +116,20 @@ export default async function Home() {
                   View Detail
                 </Link>
               </div>
-              
             </div>
           ))}
         </div>
       </div>
 
       <Link href={"/products"}>
-  <div className="flex justify-center mt-8">
-    <button
-      className="bg-[#F9F9F9] text-[#2A254B] py-3 px-8 rounded-lg font-medium text-lg transition-colors duration-300 ease-in-out hover:bg-[#2A254B] hover:text-white"
-    >
-      View All Products
-    </button>
-  </div>
-</Link>
-
+        <div className="flex justify-center mt-8">
+          <button
+            className="bg-[#F9F9F9] text-[#2A254B] py-3 px-8 rounded-lg font-medium text-lg transition-colnpm cache clean --forceors duration-300 ease-in-out hover:bg-[#2A254B] hover:text-white"
+          >
+            View All Products
+          </button>
+        </div>
+      </Link>
 
       {/* 5. Benefit Section */}
       <Benefit />

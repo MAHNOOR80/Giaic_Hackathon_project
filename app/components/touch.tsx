@@ -67,7 +67,10 @@ const Product = () => {
 
         {/* View Collection Button */}
         <div className='my-10 flex justify-center'>
-          <button className='bg-[#F9F9F9] py-4 px-8 rounded-[5px] text-[#2A254B] font-semibold text-lg hover:bg-[#2A254B] hover:text-white transition duration-300 ease-in-out shadow-md'>
+          <button
+            className='bg-[#F9F9F9] py-4 px-8 rounded-[5px] text-[#2A254B] font-semibold text-lg hover:bg-[#2A254B] hover:text-white transition duration-300 ease-in-out shadow-md'
+            onClick={handleNavigation} // Linking the button with handleNavigation function
+          >
             View Products
           </button>
         </div>
@@ -77,4 +80,3 @@ const Product = () => {
 }
 
 export default Product;
-

@@ -1,14 +1,15 @@
-"use client";
+'use client'
+
 import Hero from "@/app/components/hero";
 import Brand from "@/app/components/brand";
 import Ceramics from "@/app/components/ceramics";
 import Benefit from "@/app/components/benefit";
-import Touch from "@/app/components/touch"
+import Touch from "@/app/components/touch";
 import { sanityfetch } from "@/sanity/lib/fetch";
-import { allproducts, fourproducts } from "@/sanity/lib/queries";
+import { fourproducts } from "@/sanity/lib/queries";
 import Image from "next/image";
 import Link from "next/link";
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 type Product = {
   _id: string;
@@ -31,9 +32,18 @@ type Product = {
   };
 };
 
-export default async function Home() {
-  const products: Product[] = await sanityfetch({ query: fourproducts });
-  // console.log("Fetched Products:", products);
+const Home: React.FC = () => {
+  const [products, setProducts] = useState<Product[]>([]);
+  
+  // Fetch products when the component mounts
+  useEffect(() => {
+    const fetchProducts = async () => {
+      const data = await sanityfetch({ query: fourproducts });
+      setProducts(data);
+    };
+    
+    fetchProducts();
+  }, []);
 
   return (
     <div>
@@ -96,7 +106,6 @@ export default async function Home() {
 
               {/* Buttons */}
               <div className="flex space-x-4 mt-auto">
-              
                 <Link
                   href={`/products/${product.slug.current}`}
                   className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors duration-300"
@@ -104,22 +113,20 @@ export default async function Home() {
                   View Detail
                 </Link>
               </div>
-              
             </div>
           ))}
         </div>
       </div>
 
       <Link href={"/products"}>
-  <div className="flex justify-center mt-8">
-    <button
-      className="bg-[#F9F9F9] text-[#2A254B] py-3 px-8 rounded-lg font-medium text-lg transition-colors duration-300 ease-in-out hover:bg-[#2A254B] hover:text-white"
-    >
-      View All Products
-    </button>
-  </div>
-</Link>
-
+        <div className="flex justify-center mt-8">
+          <button
+            className="bg-[#F9F9F9] text-[#2A254B] py-3 px-8 rounded-lg font-medium text-lg transition-colors duration-300 ease-in-out hover:bg-[#2A254B] hover:text-white"
+          >
+            View All Products
+          </button>
+        </div>
+      </Link>
 
       {/* 5. Benefit Section */}
       <Benefit />
@@ -128,4 +135,6 @@ export default async function Home() {
       <Touch />
     </div>
   );
-}
+};
+
+export default Home;
