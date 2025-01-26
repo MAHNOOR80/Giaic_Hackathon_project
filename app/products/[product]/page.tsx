@@ -96,7 +96,7 @@ const Page = ({ params }: { params: { product: string } }) => {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8 pt-20 md:pt-24"> {/* Added padding top here */}
       {notification && (
         <div className="fixed top-4 left-1/2 transform -translate-x-1/2 bg-green-600 text-white px-6 py-3 rounded-md shadow-xl z-50">
           {notification}{" "}

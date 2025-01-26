@@ -83,9 +83,11 @@ const CartPage: React.FC = () => {
                       {/* Product Image */}
                       <div className="relative w-full sm:w-32 h-48 sm:h-32">
                         <div className="w-full h-full bg-gray-200 rounded-md overflow-hidden">
-                          <img
+                          <Image
                             src={item.image || "/placeholder-image.png"}
                             alt={item.name}
+                            height={200}
+                            width={200}
                             className="w-full h-full object-cover"
                           />
                         </div>

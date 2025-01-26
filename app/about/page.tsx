@@ -3,7 +3,7 @@ import React from "react";
 
 const About = () => {
   return (
-    <div className="bg-gray-50">
+    <div className="bg-gray-50 pt-20 md:pt-24"> {/* Added padding top here */}
       {/* Hero Section */}
       <div className="w-full h-auto flex flex-col md:flex-row justify-between items-center px-4 md:px-16 py-12 bg-white shadow-lg">
         <div className="md:w-2/4 text-xl md:text-2xl text-center md:text-left text-custom-purple">
@@ -101,4 +101,3 @@ const About = () => {
 };
 
 export default About;
-

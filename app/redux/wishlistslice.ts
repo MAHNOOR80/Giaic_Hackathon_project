@@ -2,12 +2,19 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface Product {
   _id: string;
+  image: string;
   name: string;
   price: number;
-  description: string;
-  image: string;
   quantity: number;
-  // Add any other fields based on your data model
+  slug: {
+    current: string;
+  };
+  dimensions: {
+    depth: number;
+    width: number;
+    height: number;
+  };
+  description?: string;
 }
 
 interface WishlistState {

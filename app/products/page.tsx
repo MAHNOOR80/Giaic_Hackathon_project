@@ -5,11 +5,11 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { add } from "../redux/cartslice";
 import Image from "next/image";
-import { client } from "@/sanity/lib/client"; // Import Sanity client
-import { RootState } from "../redux/store"; // Import RootState for wishlist state
-import { addToWishlist, removeFromWishlist } from "../redux/wishlistslice"; // Wishlist slice actions
+import { client } from "@/sanity/lib/client";
+import { RootState } from "../redux/store";
+import { addToWishlist, removeFromWishlist } from "../redux/wishlistslice";
 
-// Updated Product interface to fix type error
+// Define Product interface
 interface Product {
   _id: string;
   image: string;
@@ -17,25 +17,30 @@ interface Product {
   price: number;
   quantity: number;
   slug: {
-    current: string; // Make sure to access `slug.current`
+    current: string;
   };
   dimensions: {
     depth: number;
     width: number;
     height: number;
   };
-  description?: string; // Make description optional if it's missing
+  description?: string;
 }
 
 const Products: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [cartNotification, setCartNotification] = useState<string | null>(null);
   const [wishlistNotification, setWishlistNotification] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
   const dispatch = useDispatch();
   const wishlist = useSelector((state: RootState) => state.wishlist.items);
 
   // Fetch Products from Sanity
   const getProducts = async () => {
+    setLoading(true);
+    setError(null);
     try {
       const query = `*[_type == "product"]{
         _id,
@@ -45,11 +50,15 @@ const Products: React.FC = () => {
         quantity,
         slug,
         dimensions,
+        description
       }`;
-      const products = await client.fetch(query);
-      setProducts(products);
+      const fetchedProducts = await client.fetch(query);
+      setProducts(fetchedProducts);
     } catch (error) {
       console.error("Error fetching products:", error);
+      setError("Failed to load products. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -67,16 +76,75 @@ const Products: React.FC = () => {
       dispatch(removeFromWishlist(product._id));
       setWishlistNotification(`${product.name} removed from wishlist.`);
     } else {
-      dispatch(addToWishlist(product));
+      // Ensure description is a string
+      const productWithValidDescription = {
+        ...product,
+        description: product.description || '', // Provide a default value if undefined
+      };
+      dispatch(addToWishlist(productWithValidDescription)); // Use the modified product
       setWishlistNotification(`${product.name} added to wishlist!`);
     }
     setTimeout(() => setWishlistNotification(null), 3000);
   };
 
-  // Fetch products on component mount
   useEffect(() => {
     getProducts();
   }, []);
+
+  // Render Wishlist Items
+  const renderWishlistItems = () => {
+    if (wishlist.length === 0) {
+      return <p className="text-gray-600">Your wishlist is empty.</p>;
+    }
+
+    return (
+      <div className="grid gap-6 lg:grid-cols-3 sm:grid-cols-2">
+        {wishlist.map((item) => (
+          <div
+            key={item._id}
+            className="w-full max-w-sm bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition duration-300"
+          >
+            <Link href={`/products/${item.slug?.current}`}>
+              <div className="w-full h-[200px] flex justify-center items-center bg-gray-100 rounded-t-lg overflow-hidden">
+                <Image
+                  className="object-contain"
+                  src={item.image}
+                  alt={item.name}
+                  height={200}
+                  width={200}
+                  loading="lazy"
+                />
+              </div>
+            </Link>
+            <div className="px-6 pb-6 pt-4">
+              <h5 className="text-lg font-semibold text-gray-900">
+                {item.name}
+              </h5>
+              <div className="flex items-center mt-4">
+                <span className="text-xl font-bold text-gray-900">
+                  ${item.price}
+                </span>
+              </div>
+              <button
+                onClick={() => handleWishlistToggle(item)}
+                className="bg-red-600 text-white hover:bg-red-700 focus:ring-4 focus:outline-none font-medium rounded-lg text-sm px-6 py-2 mt-4 transition-all duration-200"
+              >
+                Remove from Wishlist
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  };
+
+  if (loading) {
+    return <p className="text-center text-lg">Loading products...</p>;
+  }
+
+  if (error) {
+    return <p className="text-center text-red-500">{error}</p>;
+  }
 
   return (
     <div className="relative">
@@ -101,46 +169,7 @@ const Products: React.FC = () => {
       {/* Wishlist Section */}
       <div className="bg-gray-100 p-8 mb-8 rounded-lg shadow-lg">
         <h2 className="text-2xl font-bold mb-4">Your Wishlist</h2>
-        {wishlist.length === 0 ? (
-          <p className="text-gray-600">Your wishlist is empty.</p>
-        ) : (
-          <div className="grid gap-6 lg:grid-cols-3 sm:grid-cols-2">
-            {wishlist.map((item) => (
-              <div
-                key={item._id}
-                className="w-full max-w-sm bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition duration-300"
-              >
-                <Link href={`/products/${item.slug?.current}`}>
-                  <div className="w-full h-[200px] flex justify-center items-center bg-gray-100 rounded-t-lg overflow-hidden">
-                    <Image
-                      className="object-contain"
-                      src={item.image}
-                      alt={item.name}
-                      height={200}
-                      width={200}
-                    />
-                  </div>
-                </Link>
-                <div className="px-6 pb-6 pt-4">
-                  <h5 className="text-lg font-semibold text-gray-900">
-                    {item.name}
-                  </h5>
-                  <div className="flex items-center mt-4">
-                    <span className="text-xl font-bold text-gray-900">
-                      ${item.price}
-                    </span>
-                  </div>
-                  <button
-                    onClick={() => handleWishlistToggle(item)}
-                    className="bg-red-600 text-white hover:bg-red-700 focus:ring-4 focus:outline-none font-medium rounded-lg text-sm px-6 py-2 mt-4 transition-all duration-200"
-                  >
-                    Remove from Wishlist
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
+        {renderWishlistItems()}
       </div>
 
       {/* Product Grid */}
@@ -164,21 +193,21 @@ const Products: React.FC = () => {
                 </div>
               </Link>
               <div className="px-6 pb-6 pt-4">
-                <h5 className="text-xl font-semibold tracking-tight text-gray-900 dark:text-white">
+                <h5 className="text-xl font-semibold tracking-tight text-gray-900">
                   {product.name}
                 </h5>
-                <p className="text-gray-800 dark:text-gray-300 text-sm mt-2">
+                <p className="text-gray-800 text-sm mt-2">
                   <strong>Available Quantity:</strong> {product.quantity}
                 </p>
                 <div className="flex items-center mt-4">
-                  <span className="text-2xl font-semibold text-gray-900 dark:text-white">
+                  <span className="text-2xl font-semibold text-gray-900">
                     ${product.price}
                   </span>
                 </div>
                 <div className="flex justify-between items-center mt-5">
                   <button
                     onClick={() => handleAddToCart(product)}
-                    className="bg-blue-600 text-white hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-6 py-3 text-center transition-all duration-200 transform hover:scale-105"
+                    className="bg-blue-600 text-white hover:bg-blue-700 font-medium rounded-lg text-sm px-6 py-3 transition-all duration-200"
                   >
                     Add to Cart
                   </button>
@@ -186,7 +215,7 @@ const Products: React.FC = () => {
                     onClick={() => handleWishlistToggle(product)}
                     className={`${
                       isInWishlist ? "bg-red-600" : "bg-gray-200"
-                    } text-white hover:bg-red-700 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-6 py-3 text-center transition-all duration-200`}
+                    } text-white hover:bg-red-700 font-medium rounded-lg text-sm px-6 py-3 transition-all duration-200`}
                   >
                     {isInWishlist ? "Remove from Wishlist" : "Add to Wishlist"}
                   </button>
