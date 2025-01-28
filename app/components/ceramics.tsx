@@ -1,6 +1,6 @@
-import Image from 'next/image'
+import Image from 'next/image';
 import Link from 'next/link';
-import React from 'react'
+import React from 'react';
 
 const Ceramics = () => {
   return (
@@ -20,7 +20,7 @@ const Ceramics = () => {
                 height={700}
                 width={700}
                 alt="chair"
-                className="w-full h-[80%] object-cover"
+                className="w-full h-auto max-h-[300px] object-contain" // Adjust height here
               />
               <div className="mt-4 text-[#2A254B] px-4 pb-4">
                 <p className="text-lg font-semibold">The Dandy Chair</p>
@@ -35,7 +35,7 @@ const Ceramics = () => {
                 height={700}
                 width={700}
                 alt="vase"
-                className="w-full h-[80%] object-cover"
+                className="w-full h-auto max-h-[300px] object-contain" // Adjust height here
               />
               <div className="mt-4 text-[#2A254B] px-4 pb-4">
                 <p className="text-lg font-semibold">Rustic Vase Set</p>
@@ -50,7 +50,7 @@ const Ceramics = () => {
                 height={700}
                 width={700}
                 alt="silky vase"
-                className="w-full h-[80%] object-cover"
+                className="w-full h-auto max-h-[300px] object-contain" // Adjust height here
               />
               <div className="mt-4 text-[#2A254B] px-4 pb-4">
                 <p className="text-lg font-semibold">The Silky Vase</p>
@@ -65,7 +65,7 @@ const Ceramics = () => {
                 height={700}
                 width={700}
                 alt="lamp"
-                className="w-full h-[80%] object-cover"
+                className="w-full h-auto max-h-[300px] object-contain" // Adjust height here
               />
               <div className="mt-4 text-[#2A254B] px-4 pb-4">
                 <p className="text-lg font-semibold">The Lucky Lamp</p>
@@ -77,22 +77,20 @@ const Ceramics = () => {
 
           {/* View Collection Button */}
           <div className="my-10 flex justify-center items-center">
-          <Link href={"/products"}>
-  <div className="flex justify-center mt-8">
-    <button
-      className="bg-[#F9F9F9] text-[#2A254B] py-3 px-8 rounded-lg font-medium text-lg transition-colors duration-300 ease-in-out hover:bg-[#2A254B] hover:text-white"
-    >
-      View All Products
-    </button>
-  </div>
-</Link>
-
+            <Link href={"/products"}>
+              <div className="flex justify-center mt-8">
+                <button
+                  className="bg-[#F9F9F9] text-[#2A254B] py-3 px-8 rounded-lg font-medium text-lg transition-colors duration-300 ease-in-out hover:bg-[#2A254B] hover:text-white"
+                >
+                  View All Products
+                </button>
+              </div>
+            </Link>
           </div>
         </div>
       </section>
     </>
-  )
+  );
 }
 
 export default Ceramics;
-

@@ -1,11 +1,13 @@
 "use client";
 
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux"; // Import useDispatch
 import { RootState } from "../redux/store";
+import { clearCart } from "../redux/cartslice"; // Import clearCart action
 import Link from "next/link";
 import { useState } from "react";
 
 const PaymentPage: React.FC = () => {
+  const dispatch = useDispatch(); // Initialize dispatch
   const cartItems = useSelector((state: RootState) => state.cart);
   const [paymentMethod, setPaymentMethod] = useState<string>("");
   const [isPaymentComplete, setIsPaymentComplete] = useState<boolean>(false);
@@ -23,22 +25,26 @@ const PaymentPage: React.FC = () => {
             <input
               type="text"
               placeholder="Card Number"
+              required
               className="p-3 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             <input
               type="text"
               placeholder="Cardholder Name"
+              required
               className="p-3 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             <div className="flex flex-col sm:flex-row gap-4">
               <input
                 type="text"
                 placeholder="MM/YY"
+                required
                 className="p-3 border border-gray-300 rounded-md w-full sm:w-1/2 focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
               <input
                 type="text"
                 placeholder="CVV"
+                required
                 className="p-3 border border-gray-300 rounded-md w-full sm:w-1/2 focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
@@ -77,13 +83,38 @@ const PaymentPage: React.FC = () => {
     }
   };
 
-  const handlePayment = () => {
+  const handlePayment = (event: React.FormEvent) => {
+    event.preventDefault(); // Prevent default form submission
+
     if (!paymentMethod) {
       alert("Please select a payment method");
       return;
     }
+
+    // Check if all required fields are filled
+    const requiredFields = document.querySelectorAll('input[required]');
+    let allFilled = true;
+
+    requiredFields.forEach((field) => {
+      // Use type assertion to specify that field is an HTMLInputElement
+      const inputField = field as HTMLInputElement;
+
+      if (!inputField.value) {
+        allFilled = false;
+        inputField.classList.add('border-red-500'); // Highlight empty fields
+      } else {
+        inputField.classList.remove('border-red-500'); // Remove highlight if filled
+      }
+    });
+
+    if (!allFilled) {
+      alert("Please fill out all required fields.");
+      return;
+    }
+
     setTimeout(() => {
       setIsPaymentComplete(true);
+      dispatch(clearCart()); // Clear the cart after payment is complete
     }, 1000);
   };
 
@@ -131,90 +162,92 @@ const PaymentPage: React.FC = () => {
         </h1>
 
         <div className="max-w-6xl mx-auto">
-          <div className="flex flex-col lg:flex-row gap-8">
-            {/* Left side: Payment Method */}
-            <div className="w-full lg:w-1/2">
-              <div className="bg-white p-6 md:p-8 shadow-lg rounded-lg">
-                <h2 className="text-xl md:text-2xl font-semibold text-gray-800 mb-6">
-                  Choose Payment Method
-                </h2>
-                <div className="space-y-4">
-                  {["creditCard", "paypal", "bankTransfer"].map((method) => (
-                    <label
-                      key={method}
-                      className="flex items-center p-4 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors"
-                    >
-                      <input
-                        type="radio"
-                        id={method}
-                        name="paymentMethod"
-                        value={method}
-                        onChange={(e) => setPaymentMethod(e.target.value)}
-                        className="form-radio text-blue-600 h-5 w-5"
-                      />
-                      <span className="ml-4 text-lg text-gray-700">
-                        {method === "creditCard"
-                          ? "Credit/Debit Card"
-                          : method === "paypal"
-                          ? "PayPal"
-                          : "Bank Transfer"}
-                      </span>
-                    </label>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Right side: Order Summary and Payment Details */}
-            <div className="w-full lg:w-1/2">
-              <div className="bg-white p-6 md:p-8 shadow-lg rounded-lg">
-                <h2 className="text-xl md:text-2xl font-semibold text-gray-800 mb-6">
-                  Order Summary
-                </h2>
-                <div className="space-y-4 mb-6">
-                  {cartItems.map((item) => (
-                    <div
-                      key={item._id}
-                      className="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-gray-50 p-4 rounded-md gap-2"
-                    >
-                      <span className="text-gray-800 font-medium">{item.name}</span>
-                      <div className="flex items-center gap-4 ml-auto">
-                        <span className="text-gray-600">x{item.quantity}</span>
-                        <span className="text-gray-800 font-bold">
-                          ${(item.price * item.quantity).toFixed(2)}
+          <form onSubmit={handlePayment}> {/* Wrap in a form */}
+            <div className="flex flex-col lg:flex-row gap-8">
+              {/* Left side: Payment Method */}
+              <div className="w-full lg:w-1/2">
+                <div className="bg-white p-6 md:p-8 shadow-lg rounded-lg">
+                  <h2 className="text-xl md:text-2xl font-semibold text-gray-800 mb-6">
+                    Choose Payment Method
+                  </h2>
+                  <div className="space-y-4">
+                    {["creditCard", "paypal", "bankTransfer"].map((method) => (
+                      <label
+                        key={method}
+                        className="flex items-center p-4 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors"
+                      >
+                        <input
+                          type="radio"
+                          id={method}
+                          name="paymentMethod"
+                          value={method}
+                          onChange={(e) => setPaymentMethod(e.target.value)}
+                          className="form-radio text-blue-600 h-5 w-5"
+                        />
+                        <span className="ml-4 text-lg text-gray-700">
+                          {method === "creditCard"
+                            ? "Credit/Debit Card"
+                            : method === "paypal"
+                            ? "PayPal"
+                            : "Bank Transfer"}
                         </span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="border-t border-gray-200 pt-4 mb-6">
-                  <div className="flex justify-between items-center">
-                    <span className="text-lg font-semibold text-gray-800">Total:</span>
-                    <span className="text-xl font-bold text-blue-600">
-                      ${totalPrice.toFixed(2)}
-                    </span>
+                      </label>
+                    ))}
                   </div>
                 </div>
+              </div>
 
-                {/* Payment Details */}
-                <div className="space-y-4">
-                  <h3 className="text-lg font-semibold text-gray-800">
-                    Payment Details
-                  </h3>
-                  {renderPaymentDetails()}
+              {/* Right side: Order Summary and Payment Details */}
+              <div className="w-full lg:w-1/2">
+                <div className="bg-white p-6 md:p-8 shadow-lg rounded-lg">
+                  <h2 className="text-xl md:text-2xl font-semibold text-gray-800 mb-6">
+                    Order Summary
+                  </h2>
+                  <div className="space-y-4 mb-6">
+                    {cartItems.map((item) => (
+                      <div
+                        key={item._id}
+                        className="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-gray-50 p-4 rounded-md gap-2"
+                      >
+                        <span className="text-gray-800 font-medium">{item.name}</span>
+                        <div className="flex items-center gap-4 ml-auto">
+                          <span className="text-gray-600">x{item.quantity}</span>
+                          <span className="text-gray-800 font-bold">
+                            ${(item.price * item.quantity).toFixed(2)}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
 
-                  <button
-                    onClick={handlePayment}
-                    disabled={!paymentMethod}
-                    className="w-full mt-6 bg-blue-600 text-white px-8 py-3 rounded-md shadow-lg hover:bg-blue-700 transition-all disabled:bg-gray-400 disabled:cursor-not-allowed"
-                  >
-                    Complete Payment
-                  </button>
+                  <div className="border-t border-gray-200 pt-4 mb-6">
+                    <div className="flex justify-between items-center">
+                      <span className="text-lg font-semibold text-gray-800">Total:</span>
+                      <span className="text-xl font-bold text-blue-600">
+                        ${totalPrice.toFixed(2)}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Payment Details */}
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold text-gray-800">
+                      Payment Details
+                    </h3>
+                    {renderPaymentDetails()}
+
+                    <button
+                      type="submit" // Change to submit type
+                      disabled={!paymentMethod}
+                      className="w-full mt-6 bg-blue-600 text-white px-8 py-3 rounded-md shadow-lg hover:bg-blue-700 transition-all disabled:bg-gray-400 disabled:cursor-not-allowed"
+                    >
+                      Complete Payment
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
+          </form> {/* Close the form */}
         </div>
       </div>
     </div>

@@ -61,9 +61,11 @@ function Navbar() {
 
           {/* Icons Section - Visible on both mobile and desktop */}
           <div className="flex items-center space-x-4">
+            <Link href={"/Search"}>
             <button className="p-2 hover:text-blue-500 transition-colors duration-200">
               <CiSearch size={25} />
             </button>
+            </Link>
             
             <Link href="/Cart">
               <div className="relative p-2 hover:text-blue-500 transition-colors duration-200">
